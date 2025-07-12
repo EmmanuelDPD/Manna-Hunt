@@ -1,9 +1,32 @@
 import React, { useState } from 'react';
-import { View, ImageBackground, StyleSheet } from 'react-native';
+import { View, ImageBackground, StyleSheet, Alert } from 'react-native';
 import { Button, Text, Title, Card } from 'react-native-paper';
+import { auth, db } from '../services/firebase';
+import { collection, addDoc } from 'firebase/firestore';
 
 export default function PrizeScreen() {
   const [selected, setSelected] = useState(null);
+  const [claimed, setClaimed] = useState(false);
+  const [loading, setLoading] = useState(false);
+
+  const handleClaim = async () => {
+    if (!selected) return;
+    setLoading(true);
+    try {
+      await addDoc(collection(db, 'prizes'), {
+        userId: auth.currentUser.uid,
+        prizeType: selected,
+        claimedAt: new Date(),
+      });
+      setClaimed(true);
+      Alert.alert('Success', 'Your prize claim has been submitted!');
+    } catch (err) {
+      Alert.alert('Error', err.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <ImageBackground source={require('../assets/backgrounds/nature.jpg')} style={styles.bg}>
       <View style={styles.container}>
@@ -20,8 +43,14 @@ export default function PrizeScreen() {
             <Text style={styles.note}>(Church-held, triggered on action)</Text>
           </Card.Content>
         </Card>
-        <Button mode="contained" style={styles.button} disabled={!selected} onPress={() => {}}>
-          Claim Prize
+        <Button
+          mode="contained"
+          style={styles.button}
+          disabled={!selected || claimed || loading}
+          loading={loading}
+          onPress={handleClaim}
+        >
+          {claimed ? 'Prize Claimed' : 'Claim Prize'}
         </Button>
       </View>
     </ImageBackground>
