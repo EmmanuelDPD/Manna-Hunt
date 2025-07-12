@@ -1,20 +1,29 @@
 {
   "expo": {
-    "name": "Manna Hunt",
-    "slug": "manna-hunt",
+    "name": "Manna-Hunt",
+    "slug": "Manna-Hunt",
     "version": "1.0.0",
-    "sdkVersion": "53.0.0",
-    "platforms": ["ios", "android", "web"],
     "orientation": "portrait",
     "icon": "./assets/icon.png",
+    "userInterfaceStyle": "light",
+    "newArchEnabled": true,
     "splash": {
-      "image": "./assets/splash.png",
+      "image": "./assets/splash-icon.png",
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
-    "updates": {
-      "fallbackToCacheTimeout": 0
+    "ios": {
+      "supportsTablet": true
     },
-    "assetBundlePatterns": ["**/*"]
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#ffffff"
+      },
+      "edgeToEdgeEnabled": true
+    },
+    "web": {
+      "favicon": "./assets/favicon.png"
+    }
   }
-} 
+}
