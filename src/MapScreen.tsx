@@ -1,10 +1,10 @@
+import React, { useEffect, useState } from 'react';
 import { View, StyleSheet } from 'react-native';
-import MapView, { Marker } from 'react-native-maps';
+import MapView, { Marker, Region } from 'react-native-maps';
 import * as Location from 'expo-location';
-import { useEffect, useState } from 'react';
 
-export default function MapScreen() {
-  const [region, setRegion] = useState(null);
+const MapScreen: React.FC = () => {
+  const [region, setRegion] = useState<Region | null>(null);
 
   useEffect(() => {
     (async () => {
@@ -28,4 +28,6 @@ export default function MapScreen() {
       <Marker coordinate={{ latitude: region.latitude + 0.001, longitude: region.longitude + 0.001 }} title="Cache" description="Find the hidden cache!" />
     </MapView>
   );
-} 
+};
+
+export default MapScreen; 

@@ -1,6 +1,13 @@
+import React from 'react';
 import { View, Text, ScrollView, Image, StyleSheet } from 'react-native';
 
-const steps = [
+type Step = {
+  title: string;
+  desc: string;
+  color: string;
+};
+
+const steps: Step[] = [
   { title: 'The Beginning of Wisdom', desc: 'Start your journey of discovery.', color: '#4ade80' },
   { title: 'Ask and Receive', desc: 'Unlock the next clue by asking.', color: '#fb923c' },
   { title: 'The Good Shepherd', desc: 'Follow the path to guidance.', color: '#fb923c' },
@@ -8,13 +15,12 @@ const steps = [
   { title: 'The Narrow Path', desc: 'Complete the final challenge.', color: '#f87171' },
 ];
 
-export default function ExploreScreen() {
+const ExploreScreen: React.FC = () => {
+  // Placeholder for Firebase progress integration
   const completed = 1;
   return (
     <View style={{ flex: 1, backgroundColor: '#f0fdf4' }}>
-      {/* Mascot background (placeholder) */}
       <Image source={{ uri: 'https://cdn-icons-png.flaticon.com/512/616/616408.png' }} style={styles.mascot} />
-      {/* Progress Bar */}
       <View style={{ paddingHorizontal: 24, paddingTop: 24 }}>
         <Text style={{ fontSize: 12, color: '#64748b', marginBottom: 8 }}>Progress</Text>
         <View style={{ width: '100%', backgroundColor: '#e5e7eb', borderRadius: 9999, height: 8, marginBottom: 16 }}>
@@ -22,11 +28,10 @@ export default function ExploreScreen() {
         </View>
         <Text style={{ fontSize: 14, fontWeight: '600', marginBottom: 16 }}>{completed} of {steps.length} levels completed</Text>
       </View>
-      {/* Steps */}
       <ScrollView style={{ paddingHorizontal: 24 }} contentContainerStyle={{ paddingBottom: 80 }}>
         {steps.map((step, i) => (
           <View key={i} style={styles.stepCard}>
-            <View style={[styles.badge, { backgroundColor: step.color }]}>
+            <View style={[styles.badge, { backgroundColor: step.color }]}> 
               <Text style={{ color: 'white', fontWeight: 'bold' }}>{i+1}</Text>
             </View>
             <View>
@@ -42,7 +47,9 @@ export default function ExploreScreen() {
       </ScrollView>
     </View>
   );
-}
+};
+
+export default ExploreScreen;
 
 const styles = StyleSheet.create({
   mascot: {

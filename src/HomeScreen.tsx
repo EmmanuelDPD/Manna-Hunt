@@ -1,6 +1,17 @@
+import React from 'react';
 import { View, Text, Image, TouchableOpacity, StyleSheet } from 'react-native';
+import { signInWithGoogle } from './auth'; // Assume this is your Firebase auth function
 
-export default function HomeScreen() {
+const HomeScreen: React.FC = () => {
+  const handlePress = async () => {
+    try {
+      await signInWithGoogle();
+      // You can add navigation or state update here
+    } catch (e) {
+      console.error('Login failed', e);
+    }
+  };
+
   return (
     <View style={styles.container}>
       <Image
@@ -10,13 +21,15 @@ export default function HomeScreen() {
       />
       <View style={styles.overlay} />
       <View style={styles.buttonContainer}>
-        <TouchableOpacity style={styles.button}>
+        <TouchableOpacity style={styles.button} onPress={handlePress}>
           <Text style={styles.buttonText}>Begin your journey</Text>
         </TouchableOpacity>
       </View>
     </View>
   );
-}
+};
+
+export default HomeScreen;
 
 const styles = StyleSheet.create({
   container: {

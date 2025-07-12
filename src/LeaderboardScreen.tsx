@@ -1,12 +1,19 @@
+import React from 'react';
 import { View, Text, StyleSheet, FlatList } from 'react-native';
 
-const data = [
+interface LeaderboardEntry {
+  name: string;
+  score: number;
+}
+
+const data: LeaderboardEntry[] = [
   { name: 'Alice', score: 120 },
   { name: 'Bob', score: 100 },
   { name: 'Charlie', score: 80 },
 ];
 
-export default function LeaderboardScreen() {
+const LeaderboardScreen: React.FC = () => {
+  // Placeholder for Firebase leaderboard integration
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Leaderboard</Text>
@@ -23,7 +30,9 @@ export default function LeaderboardScreen() {
       />
     </View>
   );
-}
+};
+
+export default LeaderboardScreen;
 
 const styles = StyleSheet.create({
   container: {

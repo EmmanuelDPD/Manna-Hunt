@@ -1,12 +1,14 @@
+import React from 'react';
 import { View, Text, Image, StyleSheet } from 'react-native';
 
-const achievements = [
+const achievements: string[] = [
   'First Cache Found',
   'Explorer Badge',
   'Wisdom Seeker',
 ];
 
-export default function ProfileScreen() {
+const ProfileScreen: React.FC = () => {
+  // Placeholder for Firebase user data integration
   return (
     <View style={styles.container}>
       <Image source={{ uri: 'https://randomuser.me/api/portraits/men/32.jpg' }} style={styles.avatar} />
@@ -19,7 +21,9 @@ export default function ProfileScreen() {
       ))}
     </View>
   );
-}
+};
+
+export default ProfileScreen;
 
 const styles = StyleSheet.create({
   container: {
