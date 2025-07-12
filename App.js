@@ -7,6 +7,7 @@ import { Provider as PaperProvider, ActivityIndicator } from 'react-native-paper
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import { onAuthStateChanged } from 'firebase/auth';
 import { auth } from './services/firebase';
+import { notifyDailyReminder } from './services/notifications';
 
 import LoginScreen from './screens/LoginScreen';
 import HomeScreen from './screens/HomeScreen';
@@ -14,6 +15,8 @@ import RiddleChallengeScreen from './screens/RiddleChallengeScreen';
 import VerificationScreen from './screens/VerificationScreen';
 import LeaderboardScreen from './screens/LeaderboardScreen';
 import PrizeScreen from './screens/PrizeScreen';
+import ProfileScreen from './screens/ProfileScreen';
+import AdminScreen from './screens/AdminScreen';
 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -39,7 +42,7 @@ function MainTabs() {
       <Tab.Screen name="Home" component={HomeScreen} />
       <Tab.Screen name="Discover" component={RiddleChallengeScreen} />
       <Tab.Screen name="Leaderboard" component={LeaderboardScreen} />
-      <Tab.Screen name="Profile" component={require('./screens/ProfileScreen').default} />
+      <Tab.Screen name="Profile" component={ProfileScreen} />
     </Tab.Navigator>
   );
 }
@@ -54,6 +57,11 @@ export default function App() {
       setInitializing(false);
     });
     return unsubscribe;
+  }, []);
+
+  // Schedule daily reminder notification on app start
+  useEffect(() => {
+    notifyDailyReminder();
   }, []);
 
   if (initializing) {
@@ -74,6 +82,7 @@ export default function App() {
               <Stack.Screen name="RiddleChallenge" component={RiddleChallengeScreen} />
               <Stack.Screen name="Verification" component={VerificationScreen} />
               <Stack.Screen name="Prize" component={PrizeScreen} />
+              <Stack.Screen name="Admin" component={AdminScreen} />
             </>
           ) : (
             <Stack.Screen name="Login" component={LoginScreen} />

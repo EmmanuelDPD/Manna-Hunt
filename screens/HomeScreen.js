@@ -1,20 +1,45 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { View, ImageBackground, StyleSheet, Image } from 'react-native';
-import { Button, Title, Text, Avatar, Card } from 'react-native-paper';
+import { Title, Text, Avatar } from 'react-native-paper';
+import { auth, db } from '../services/firebase';
+import { doc, getDoc } from 'firebase/firestore';
 
 // Placeholder images for stepping stones and signs
 // const stoneImg = require('../assets/stone.png'); // Add your stone image to assets
 // const signImg = require('../assets/sign.png');   // Add your sign image to assets
 
 export default function HomeScreen({ navigation }) {
+  const [userData, setUserData] = useState({ firstName: '', level: 1, progress: [] });
+  const totalSteps = 4;
+
+  useEffect(() => {
+    const fetchUser = async () => {
+      try {
+        const userRef = doc(db, 'users', auth.currentUser.uid);
+        const userSnap = await getDoc(userRef);
+        if (userSnap.exists()) {
+          setUserData({
+            firstName: userSnap.data().firstName || auth.currentUser.email.split('@')[0],
+            level: userSnap.data().level || 1,
+            progress: userSnap.data().progress || [],
+          });
+        }
+      } catch (err) {
+        // fallback to email if error
+        setUserData({ firstName: auth.currentUser.email.split('@')[0], level: 1, progress: [] });
+      }
+    };
+    fetchUser();
+  }, []);
+
   return (
-    <ImageBackground source={require('../assets/backgrounds/nature.jpg')} style={styles.bg}>
+    <ImageBackground source={require('../assets/backgrounds/MainBackground.jpg')} style={styles.bg}>
       {/* Top user card */}
       <View style={styles.topCard}>
         <Avatar.Icon icon="account" size={40} style={styles.avatar} />
         <View style={{ marginLeft: 12 }}>
-          <Text style={styles.userName}>Johnny Appleseed</Text>
-          <Text style={styles.userLevel}>Level 1</Text>
+          <Text style={styles.userName}>{userData.firstName}</Text>
+          <Text style={styles.userLevel}>Level {userData.level}</Text>
         </View>
       </View>
       {/* Centered welcome text */}
@@ -24,18 +49,19 @@ export default function HomeScreen({ navigation }) {
       </View>
       {/* Stepping stones path */}
       <View style={styles.pathContainer}>
-        {[1, 2, 3, 4].map((num, idx) => (
-          <View key={num} style={[styles.stepRow, { top: idx * 55 }]}> {/* Adjust top for vertical spacing */}
-            {/* <Image source={stoneImg} style={styles.stone} /> */}
-            <View style={styles.signContainer}>
-              {/* <Image source={signImg} style={styles.sign} /> */}
-              <Text style={styles.signText}>{num}</Text>
+        {[1, 2, 3, 4].map((num, idx) => {
+          const completed = userData.progress.length >= num;
+          return (
+            <View key={num} style={[styles.stepRow, { top: idx * 55 }]}> 
+              {/* <Image source={stoneImg} style={[styles.stone, completed && { opacity: 1 }, !completed && { opacity: 0.4 }]} /> */}
+              <View style={styles.signContainer}>
+                {/* <Image source={signImg} style={styles.sign} /> */}
+                <Text style={[styles.signText, completed && { color: '#388E3C' }]}>{num}</Text>
+              </View>
             </View>
-          </View>
-        ))}
+          );
+        })}
       </View>
-      {/* Begin Journey button at the bottom (optional) */}
-      {/* <Button mode="contained" style={styles.button} onPress={() => navigation.navigate('RiddleChallenge')}>Begin Journey</Button> */}
     </ImageBackground>
   );
 }
@@ -47,7 +73,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     backgroundColor: '#fff',
     borderRadius: 20,
-    marginTop: 32,
+    marginTop: 45,
     marginHorizontal: 16,
     padding: 12,
     elevation: 3,

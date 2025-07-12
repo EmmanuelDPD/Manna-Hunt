@@ -4,12 +4,15 @@ import { Text, Title, Avatar, Card, ActivityIndicator, Chip } from 'react-native
 import { collection, getDocs, query, orderBy } from 'firebase/firestore';
 import { db } from '../services/firebase';
 import { SafeAreaView as SafeAreaViewRN } from 'react-native-safe-area-context';
+import { auth } from '../services/firebase';
+import { notifyLeaderboardChange } from '../services/notifications';
 
 const podiumColors = ['#FFD700', '#C0C0C0', '#CD7F32']; // Gold, Silver, Bronze
 
 export default function LeaderboardScreen() {
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [wasTop3, setWasTop3] = useState(false);
 
   useEffect(() => {
     const fetchLeaderboard = async () => {
@@ -17,7 +20,17 @@ export default function LeaderboardScreen() {
       try {
         const q = query(collection(db, 'users'), orderBy('level', 'desc'), orderBy('xp', 'desc'));
         const snap = await getDocs(q);
-        setUsers(snap.docs.map(doc => ({ id: doc.id, ...doc.data() })));
+        const userList = snap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+        setUsers(userList);
+        // Leaderboard notification logic
+        const myIndex = userList.findIndex(u => u.id === auth.currentUser.uid);
+        if (myIndex > -1 && myIndex < 3 && !wasTop3) {
+          await notifyLeaderboardChange('top3');
+          setWasTop3(true);
+        } else if (myIndex >= 3 && wasTop3) {
+          await notifyLeaderboardChange('overtaken');
+          setWasTop3(false);
+        }
       } catch (err) {
         setUsers([]);
       } finally {
@@ -25,7 +38,8 @@ export default function LeaderboardScreen() {
       }
     };
     fetchLeaderboard();
-  }, []);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [wasTop3]);
 
   if (loading) {
     return (
@@ -60,7 +74,7 @@ export default function LeaderboardScreen() {
               {/* Podium for Top 3 */}
               <View style={styles.podiumRow}>
                 {podium.map((user, idx) => (
-                  <View key={user.id} style={[styles.podium, { backgroundColor: podiumColors[idx] }]}>
+                  <View key={user.id} style={[styles.podium, { backgroundColor: podiumColors[idx] }]}> 
                     <Avatar.Icon icon="account" size={48} style={styles.avatar} />
                     <Text style={styles.podiumName} numberOfLines={1}>{user.firstName || user.email}</Text>
                     <Chip style={styles.levelChip}>Lvl {user.level || 1}</Chip>

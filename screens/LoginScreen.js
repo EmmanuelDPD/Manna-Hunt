@@ -17,7 +17,7 @@ export default function LoginScreen({ navigation }) {
     try {
       if (isLogin) {
         await signInWithEmailAndPassword(auth, email, password);
-        navigation.replace('MainTabs');
+        // navigation.replace('MainTabs'); // Let auth state handle navigation
       } else {
         const userCred = await createUserWithEmailAndPassword(auth, email, password);
         await setDoc(doc(db, 'users', userCred.user.uid), {
@@ -28,7 +28,7 @@ export default function LoginScreen({ navigation }) {
           progress: [],
           createdAt: new Date(),
         });
-        navigation.replace('MainTabs');
+        // navigation.replace('MainTabs'); // Let auth state handle navigation
       }
     } catch (err) {
       Alert.alert('Error', err.message);

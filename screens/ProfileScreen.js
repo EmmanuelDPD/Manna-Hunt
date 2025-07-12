@@ -5,9 +5,17 @@ import { auth, db } from '../services/firebase';
 import { doc, getDoc } from 'firebase/firestore';
 import { signOut } from 'firebase/auth';
 
-export default function ProfileScreen() {
+export default function ProfileScreen({ navigation, route }) {
   const [userData, setUserData] = useState(null);
   const [loading, setLoading] = useState(true);
+
+  // Debug logging
+  useEffect(() => {
+    console.log('ProfileScreen mounted, navigation:', !!navigation);
+    if (!navigation) {
+      console.warn('Navigation is undefined in ProfileScreen');
+    }
+  }, [navigation]);
 
   useEffect(() => {
     const fetchUser = async () => {
@@ -33,6 +41,20 @@ export default function ProfileScreen() {
     }
   };
 
+  const handleAdminAccess = () => {
+    try {
+      if (navigation && navigation.navigate) {
+        navigation.navigate('Admin');
+      } else {
+        console.warn('Navigation not available for Admin screen');
+        Alert.alert('Admin Panel', 'Admin panel not available in this context');
+      }
+    } catch (error) {
+      console.error('Navigation error:', error);
+      Alert.alert('Admin Panel', 'Admin panel not available in this context');
+    }
+  };
+
   if (loading) {
     return <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}><ActivityIndicator size="large" color="#388E3C" /></View>;
   }
@@ -54,6 +76,9 @@ export default function ProfileScreen() {
         <Text style={styles.label}>XP:</Text>
         <Text style={styles.value}>{userData.xp || 0}</Text>
         <Button mode="contained" style={styles.button} onPress={handleLogout}>Logout</Button>
+        <Button mode="outlined" style={styles.adminButton} onPress={handleAdminAccess}>
+          Admin Panel (Dev)
+        </Button>
       </View>
     </ImageBackground>
   );
@@ -66,4 +91,5 @@ const styles = StyleSheet.create({
   label: { color: '#388E3C', fontWeight: 'bold', marginTop: 8 },
   value: { color: '#6B4F27', marginBottom: 4 },
   button: { backgroundColor: '#7CB342', borderRadius: 24, paddingHorizontal: 32, marginTop: 32 },
+  adminButton: { borderColor: '#7CB342', borderRadius: 24, paddingHorizontal: 32, marginTop: 16 },
 }); 
